@@ -31,20 +31,20 @@ def scan_url(req: ScanRequest):
     reason = "Clean link"
     url = req.url.lower()
 
-bad_keywords = ["login", "verify", "account", "secure", "update",
-                "banking", "free", "winner", "click", "confirm", "prize"]
-keyword_hits = 0
-for keyword in bad_keywords:
-    if keyword in url:
-        score += 15
-        keyword_hits += 1
-        reason = f"Suspicious keyword: {keyword}"
-if keyword_hits > 1:
-    score += 20
+    bad_keywords = ["login", "verify", "account", "secure", "update",
+                    "banking", "free", "winner", "click", "confirm", "prize"]
+    keyword_hits = 0
+    for keyword in bad_keywords:
+        if keyword in url:
+            score += 15
+            keyword_hits += 1
+            reason = f"Suspicious keyword: {keyword}"
+    if keyword_hits > 1:
+        score += 20
 
     if re.search(r'https?://\d+\.\d+\.\d+\.\d+', req.url):
         score += 30
-        reason = "IP address URL — no domain"
+        reason = "IP address URL"
 
     if req.unknown_sender:
         score += 10
@@ -53,7 +53,7 @@ if keyword_hits > 1:
     for tld in suspicious_tlds:
         if tld in url:
             score += 20
-            reason = f"Suspicious domain extension: {tld}"
+            reason = f"Suspicious domain: {tld}"
             break
 
     if len(req.url) > 100:
@@ -63,7 +63,7 @@ if keyword_hits > 1:
     for s in shorteners:
         if s in url:
             score += 15
-            reason = "URL shortener detected"
+            reason = "URL shortener"
             break
 
     score = min(score, 100)
