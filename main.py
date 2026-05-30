@@ -31,13 +31,16 @@ def scan_url(req: ScanRequest):
     reason = "Clean link"
     url = req.url.lower()
 
-    bad_keywords = ["login", "verify", "account", "secure", "update",
-                    "banking", "free", "winner", "click", "confirm", "prize"]
-    for keyword in bad_keywords:
-        if keyword in url:
-            score += 15
-            reason = f"Suspicious keyword: {keyword}"
-            break
+bad_keywords = ["login", "verify", "account", "secure", "update",
+                "banking", "free", "winner", "click", "confirm", "prize"]
+keyword_hits = 0
+for keyword in bad_keywords:
+    if keyword in url:
+        score += 15
+        keyword_hits += 1
+        reason = f"Suspicious keyword: {keyword}"
+if keyword_hits > 1:
+    score += 20
 
     if re.search(r'https?://\d+\.\d+\.\d+\.\d+', req.url):
         score += 30
